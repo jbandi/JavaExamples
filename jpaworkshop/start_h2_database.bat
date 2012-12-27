@@ -1,0 +1,1 @@
+java -cp c:/Users/simon_000/.m2/repository/com/h2database/h2/1.3.159/h2*.jar org.h2.tools.Server
