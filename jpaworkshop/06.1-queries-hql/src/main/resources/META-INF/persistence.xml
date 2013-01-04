@@ -11,6 +11,7 @@
         <class>jpaworkshop.model.Phone</class>
         <class>jpaworkshop.model.Project</class>
         <class>jpaworkshop.model.QualityProject</class>
+        <class>jpaworkshop.model.UnrelatedEntity</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/jpaworkshop"/>-->

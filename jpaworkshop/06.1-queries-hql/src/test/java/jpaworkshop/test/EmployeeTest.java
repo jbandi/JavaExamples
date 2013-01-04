@@ -10,12 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import jpaworkshop.model.Address;
-import jpaworkshop.model.Department;
-import jpaworkshop.model.DesignProject;
-import jpaworkshop.model.Employee;
-import jpaworkshop.model.Phone;
-import jpaworkshop.model.Project;
+import jpaworkshop.model.*;
 import jpaworkshop.statistics.EmployeeStats;
 
 import org.junit.After;
@@ -190,5 +185,21 @@ public class EmployeeTest {
         Query query5 =   em.createQuery("select e from Employee e where e.projects is empty");
         List<Employee> employees5 = query5.getResultList();
         assertEquals(0, employees5.size());
+    }
+
+    @Test
+    public void joinUnrelatedEntities() throws Exception {
+
+        // Create & persist an unrelated entity
+        em.getTransaction().begin();
+        UnrelatedEntity unrelatedEntity = new UnrelatedEntity();
+        unrelatedEntity.setNumberAttribute(80000);
+        unrelatedEntity.setStringAttribute("BE");
+        em.persist(unrelatedEntity);
+        em.getTransaction().commit();
+
+        Query query1 = em.createQuery("select e from Employee e, UnrelatedEntity u where e.salary = u.numberAttribute and u.stringAttribute = 'BE'");
+        List<Employee> employees = query1.getResultList();
+        assertEquals(1, employees.size());
     }
 }
