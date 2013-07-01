@@ -3,7 +3,8 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
     <persistence-unit name="jpaworkshop" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>jpaworkshop.model.Address</class>
         <class>jpaworkshop.model.Department</class>
         <class>jpaworkshop.model.Employee</class>
@@ -12,7 +13,8 @@
             <!--<property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/jpaworkshop"/>-->
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>-->
-            <property name="javax.persistence.jdbc.driver" value="net.sf.log4jdbc.DriverSpy"/>
+            <!-- <property name="javax.persistence.jdbc.driver" value="net.sf.log4jdbc.DriverSpy"/> -->
+            <property name="javax.persistence.jdbc.driver" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>            
             <property name="javax.persistence.jdbc.url" value="jdbc:log4jdbc:h2:mem:test"/>
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:log4jdbc:h2:tcp://localhost/~/jpaworkshop"/>-->
             <property name="javax.persistence.jdbc.user" value="sa"/>
@@ -27,6 +29,12 @@
             <!--<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>-->
             <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.use_sql_comments" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>
