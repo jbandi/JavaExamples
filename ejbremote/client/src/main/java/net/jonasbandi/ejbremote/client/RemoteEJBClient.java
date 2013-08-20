@@ -15,25 +15,28 @@ import java.util.Properties;
 public class RemoteEJBClient {
 
     public static void main(String[] args) throws Exception {
-        // Invoke a stateless bean
         invokeStatelessBean();
     }
 
     private static void invokeStatelessBean() throws NamingException {
 
+        /////////////////////////////
+        // The "standard" JNDI lookup
         final Hashtable jndiProperties = new Hashtable();
         jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
         jndiProperties.put(Context.PROVIDER_URL, "remote://localhost:4447");
-//        jndiProperties.put(Context.SECURITY_PRINCIPAL, "ejbuser");
-//        jndiProperties.put(Context.SECURITY_CREDENTIALS, "ejbuser123!");
-//        jndiProperties.put("jboss.naming.client.ejb.context", true);
+        jndiProperties.put(Context.SECURITY_PRINCIPAL, "ejbuser");
+        jndiProperties.put(Context.SECURITY_CREDENTIALS, "ejbuser123!");
+        jndiProperties.put("jboss.naming.client.ejb.context", true);
         final Context context = new InitialContext(jndiProperties);
 
         traverseJndiNode("/", context);
-//        final HelloWorld helloWorld = (HelloWorld) context.lookup("ejbremote-ear/ejbremote-ejb/HelloWorldBean!"+ HelloWorld.class.getName());
-//        System.out.println(helloWorld.sayHello());
-//        context.close();
+        final HelloWorld helloWorld = (HelloWorld) context.lookup("ejbremote-ear/ejbremote-ejb/HelloWorldBean!"+ HelloWorld.class.getName());
+        System.out.println(helloWorld.sayHello());
+        context.close();
 
+        /////////////////////////////////////////////
+        // Using the proprietary JBoss EJB Client API
         final Properties ejbProperties = new Properties();
         ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
@@ -44,10 +47,10 @@ public class RemoteEJBClient {
         ejbProperties.put("remote.connection.1.username", "ejbuser");
         ejbProperties.put("remote.connection.1.password", "ejbuser123!");
         ejbProperties.put("org.jboss.ejb.client.scoped.context", "true");
-//
-//        final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(ejbProperties);
-//        final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
-//        EJBClientContext.setSelector(selector);
+
+        final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(ejbProperties);
+        final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
+        EJBClientContext.setSelector(selector);
 
         final Context ejbContext = new InitialContext(ejbProperties);
         final HelloWorld ejbHelloWorld = (HelloWorld) ejbContext.lookup("ejb:ejbremote-ear/ejbremote-ejb/HelloWorldBean!"+ HelloWorld.class.getName());
