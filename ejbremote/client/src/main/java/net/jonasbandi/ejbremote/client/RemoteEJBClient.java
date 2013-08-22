@@ -24,6 +24,7 @@ public class RemoteEJBClient {
         // The "standard" JNDI lookup
         final Hashtable jndiProperties = new Hashtable();
         jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
+        //jndiProperties.put("jboss.naming.client.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false"); // needed for a login module that requires the password in plaintext
         jndiProperties.put(Context.PROVIDER_URL, "remote://localhost:4447");
         jndiProperties.put(Context.SECURITY_PRINCIPAL, "ejbuser");
         jndiProperties.put(Context.SECURITY_CREDENTIALS, "ejbuser123!");
@@ -42,15 +43,17 @@ public class RemoteEJBClient {
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         ejbProperties.put("remote.connections", "1");
         ejbProperties.put("remote.connection.1.host", "localhost");
-        ejbProperties.put("remote.connection.1.port", "4447");
-        ejbProperties.put("remote.connection.1.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
+        ejbProperties.put("remote.connection.1.port", 4447);
+        //ejbProperties.put("remote.connection.1.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER"); // needed for forcing authentication over remoting (i.e. if you have a custom login module)
+        //ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false"); // needed for a login module that requires the password in plaintext
         ejbProperties.put("remote.connection.1.username", "ejbuser");
         ejbProperties.put("remote.connection.1.password", "ejbuser123!");
-        ejbProperties.put("org.jboss.ejb.client.scoped.context", "true");
+        ejbProperties.put("org.jboss.ejb.client.scoped.context", "true"); // Not needed when EJBClientContext.setSelector is called programatically. ATTENTION: Client-Interceptor registration below does not work with this property! BUG?
 
         final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(ejbProperties);
         final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
         EJBClientContext.setSelector(selector);
+        EJBClientContext.getCurrent().registerInterceptor(0, new ClientInterceptor());
 
         final Context ejbContext = new InitialContext(ejbProperties);
         final HelloWorld ejbHelloWorld = (HelloWorld) ejbContext.lookup("ejb:ejbremote-ear/ejbremote-ejb/HelloWorldBean!"+ HelloWorld.class.getName());

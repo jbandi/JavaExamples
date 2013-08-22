@@ -2,3 +2,6 @@
 *.DS_Store
 *.iml
 target
+/JavaFXFirstNB/nbproject/private/
+/JavaFXFirstNB/dist/
+/JavaFXFirstNB/build/
