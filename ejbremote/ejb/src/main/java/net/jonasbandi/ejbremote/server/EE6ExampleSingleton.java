@@ -8,7 +8,10 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.security.auth.login.LoginContext;
 import java.lang.management.ManagementFactory;
+import org.jboss.security.client.SecurityClient;
+import org.jboss.security.client.SecurityClientFactory;
 
 @Singleton
 @Startup
@@ -48,8 +51,12 @@ public class EE6ExampleSingleton implements EE6ExampleMXBean {
     }
 
     // This is a method which the mbean is exposing
-    public String hello(String name)
-    {
+    public String hello(String name) throws Exception {
+
+        // Programmatically establish a security context, since the called EJB is protected by @RolesAllowed - @RunAs("user") does not work for MBeans, see: https://issues.jboss.org/browse/WFLY-981
+        SecurityClient client = SecurityClientFactory.getSecurityClient();
+        client.setSimple("ejbuser", "ejbuser123!");
+        client.login();
         return "Hello " + name + ". " + helloWorld.sayHello();
     }
 
